@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 
 export interface Response<T> {
   data: T;
-  notifications: [];
+  notifications: any[];
 }
 
 @Injectable()

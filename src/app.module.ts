@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { envs } from '@/common';
+import { envs, SeedModule } from '@/common';
+import { Product, Image, Size, Tag } from '@/entities';
+import { ProductModule } from './products/product.module';
 
 @Module({
   imports: [
@@ -15,6 +17,9 @@ import { envs } from '@/common';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([Product, Image, Size, Tag]),
+    SeedModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [],
