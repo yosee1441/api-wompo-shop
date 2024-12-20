@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  ParseIntPipe,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { ProductService } from './product.service';
@@ -37,13 +28,5 @@ export class ProductController {
   })
   findAllPagination(@Query() dto: PaginationDto) {
     return this.productService.findAllPagination(dto);
-  }
-
-  @Patch(':id')
-  updateStock(
-    @Param('id', ParseIntPipe) id: number,
-    @Body('inStock') inStock: number,
-  ) {
-    return this.productService.updateInStock(id, inStock);
   }
 }

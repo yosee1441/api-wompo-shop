@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRequestTypeDto } from './dto/create-request_type.dto';
-import { UpdateRequestTypeDto } from './dto/update-request_type.dto';
+
+import { CreateRequestTypeDto, UpdateRequestTypeDto } from './dto';
 
 @Injectable()
 export class RequestTypeService {
   create(createRequestTypeDto: CreateRequestTypeDto) {
-    return 'This action adds a new requestType';
+    return createRequestTypeDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class RequestTypeService {
   }
 
   update(id: number, updateRequestTypeDto: UpdateRequestTypeDto) {
-    return `This action updates a #${id} requestType`;
+    return { id, updateRequestTypeDto };
   }
 
   remove(id: number) {

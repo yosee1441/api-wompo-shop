@@ -720,28 +720,25 @@ export class SeedService {
 
       await this.productRepository.save(product);
 
-      // Crear imágenes asociadas
       for (const url of item.images) {
         const image = this.imageRepository.create({ url, product });
         await this.imageRepository.save(image);
       }
 
-      // Crear tallas asociadas
       for (const size of item.sizes) {
         const sizeEntity = this.sizeRepository.create({ name: size, product });
         const sizeCreated = await this.sizeRepository.save(sizeEntity);
 
-        // Crear inventario asociado
         const stock = this.stockRepository.create({
           product,
           available_quantity: item.inStock,
           warehouse: 'Main Warehouse',
           size: sizeCreated,
         });
+
         await this.stockRepository.save(stock);
       }
 
-      // Crear etiquetas asociadas
       for (const tag of item.tags) {
         const tagEntity = this.tagRepository.create({ name: tag, product });
         await this.tagRepository.save(tagEntity);

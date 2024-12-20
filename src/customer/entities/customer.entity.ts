@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 import { Transaction } from '@/transaction/entities';
-import { Order } from '@/Order/entities';
+import { Order } from '@/order/entities';
 
 @Entity()
 export class Customer {

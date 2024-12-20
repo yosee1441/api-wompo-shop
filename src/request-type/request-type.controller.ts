@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { RequestTypeService } from './request_type.service';
-import { CreateRequestTypeDto } from './dto/create-request_type.dto';
-import { UpdateRequestTypeDto } from './dto/update-request_type.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+
+import { RequestTypeService } from './request-type.service';
+import { CreateRequestTypeDto, UpdateRequestTypeDto } from './dto';
 
 @Controller('request-type')
 export class RequestTypeController {
@@ -23,7 +31,10 @@ export class RequestTypeController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRequestTypeDto: UpdateRequestTypeDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRequestTypeDto: UpdateRequestTypeDto,
+  ) {
     return this.requestTypeService.update(+id, updateRequestTypeDto);
   }
 

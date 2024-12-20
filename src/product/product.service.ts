@@ -5,6 +5,10 @@ import { Repository } from 'typeorm';
 import { Product } from './entities';
 import { CreateProductDto } from './dto';
 import { PaginationDto, Pagination } from '@/common/pagination';
+import {
+  paginatedProductsUseCase,
+  buildPaginationResponseUseCase,
+} from './use-cases';
 
 @Injectable()
 export class ProductService {
@@ -18,34 +22,10 @@ export class ProductService {
   }
 
   async findAllPagination(dto: PaginationDto): Promise<Pagination<Product[]>> {
-    const { limit, page } = dto;
-    const [results, total] = await this.productsRepository.findAndCount({
-      relations: {
-        images: true,
-        sizes: true,
-        tags: true,
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-
-    return {
-      results,
-      meta: {
-        total,
-        page,
-      },
-    };
-  }
-
-  async updateInStock(id: number, inStock: number): Promise<Product> {
-    const product = await this.productsRepository.findOneBy({ id });
-
-    if (product) {
-      product.inStock = inStock;
-      return this.productsRepository.save(product);
-    }
-
-    throw new Error('Product not found');
+    const [results, total] = await paginatedProductsUseCase(
+      this.productsRepository,
+      dto,
+    );
+    return buildPaginationResponseUseCase(results, { total, page: dto.page });
   }
 }

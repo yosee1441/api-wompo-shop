@@ -1,10 +1,10 @@
 import {
   IsString,
-  IsNumber,
   IsArray,
   IsDecimal,
   MaxLength,
   MinLength,
+  IsOptional,
 } from 'class-validator';
 
 import { Type } from 'class-transformer';
@@ -24,8 +24,12 @@ export class CreateProductDto {
   @IsDecimal()
   price: number;
 
-  @IsNumber()
-  inStock: number;
+  @IsDecimal()
+  iva: number;
+
+  @IsDecimal()
+  @IsOptional()
+  discount: number = 0;
 
   @IsString()
   slug: string;

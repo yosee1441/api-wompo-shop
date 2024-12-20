@@ -25,6 +25,9 @@ export class Product {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
+  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
+  discount: number;
+
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   iva: number;
 

@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
-import { RequestTypeService } from './request_type.service';
-import { RequestTypeController } from './request_type.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { RequestType } from './entities';
+import { RequestTypeService } from './request-type.service';
+import { RequestTypeController } from './request-type.controller';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([RequestType])],
   controllers: [RequestTypeController],
   providers: [RequestTypeService],
 })

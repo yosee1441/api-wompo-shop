@@ -10,13 +10,15 @@ import {
 
 import { Customer } from '@/customer/entities';
 import { RequestType } from '@/request-type/entities';
-import { TransactionDetail } from '@/order-items/entities';
 import { Order } from '@/order/entities';
 
 @Entity()
 export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'varchar', unique: true })
+  reference_number: string;
 
   @ManyToOne(() => Customer, (customer) => customer.transactions, {
     onDelete: 'CASCADE',
@@ -32,15 +34,12 @@ export class Transaction {
   @OneToMany(() => Order, (order) => order.transaction)
   orders: Order[];
 
-  @OneToMany(() => TransactionDetail, (detail) => detail.transaction)
-  details: TransactionDetail[];
-
   @Column('jsonb', {
-    name: 'json_response',
+    name: 'payment_response',
     nullable: false,
     default: {},
   })
-  jsonResponse: any | any[];
+  paymentResponse: any | any[];
 
   @CreateDateColumn({
     name: 'created_at',
