@@ -15,7 +15,7 @@ import { CreateProductDto } from './dto';
 import { PaginationDto } from '@/common/pagination';
 import { ProductSchema } from './swagger';
 
-@Controller('products')
+@Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

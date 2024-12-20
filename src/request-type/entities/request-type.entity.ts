@@ -2,27 +2,26 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 
-import { Product } from '@/product/entities';
+import { Transaction } from '@/transaction/entities';
 
 @Entity()
-export class Image {
+export class RequestType {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  url: string;
+  name: string;
 
-  @ManyToOne(() => Product, (product) => product.images, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'product_id' })
-  product: Product;
+  @Column()
+  description: string;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.requestType)
+  transactions: Transaction[];
 
   @CreateDateColumn({
     name: 'created_at',

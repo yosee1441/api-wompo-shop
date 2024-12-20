@@ -3,26 +3,36 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 
 import { Product } from '@/product/entities';
+import { Size } from '@/entities';
 
 @Entity()
-export class Image {
+export class Stock {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  url: string;
-
-  @ManyToOne(() => Product, (product) => product.images, {
+  @ManyToOne(() => Product, (product) => product.stocks, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id' })
   product: Product;
+
+  @ManyToOne(() => Size, (size) => size.stocks, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'size_id' })
+  size: Size;
+
+  @Column('int')
+  available_quantity: number;
+
+  @Column()
+  warehouse: string;
 
   @CreateDateColumn({
     name: 'created_at',

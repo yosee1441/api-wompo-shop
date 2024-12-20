@@ -2,27 +2,36 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 
-import { Product } from '@/product/entities';
+import { Transaction } from '@/transaction/entities';
+import { Order } from '@/Order/entities';
 
 @Entity()
-export class Image {
+export class Customer {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  url: string;
+  name: string;
 
-  @ManyToOne(() => Product, (product) => product.images, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'product_id' })
-  product: Product;
+  @Column({ unique: true })
+  email: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column()
+  address: string;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.customer)
+  transactions: Transaction[];
+
+  @OneToMany(() => Order, (order) => order.customer)
+  orders: Order[];
 
   @CreateDateColumn({
     name: 'created_at',

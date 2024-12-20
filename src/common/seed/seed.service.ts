@@ -2,7 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Product, Image, Size, Tag } from '@/entities';
+import { Image, Size, Tag } from '@/entities';
+import { Product } from '@/product/entities';
+import { Stock } from '@/stock/entities';
 
 @Injectable()
 export class SeedService {
@@ -17,6 +19,8 @@ export class SeedService {
     private readonly sizeRepository: Repository<Size>,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
+    @InjectRepository(Stock)
+    private readonly stockRepository: Repository<Stock>,
   ) {}
 
   async runSeed(): Promise<void> {
@@ -704,12 +708,11 @@ export class SeedService {
     ];
 
     for (const item of data) {
-      // Crear producto
       const product = this.productRepository.create({
         title: item.title,
         description: item.description,
         price: item.price,
-        inStock: item.inStock,
+        iva: 0.16,
         slug: item.slug,
         type: item.type,
         gender: item.gender,
@@ -726,7 +729,16 @@ export class SeedService {
       // Crear tallas asociadas
       for (const size of item.sizes) {
         const sizeEntity = this.sizeRepository.create({ name: size, product });
-        await this.sizeRepository.save(sizeEntity);
+        const sizeCreated = await this.sizeRepository.save(sizeEntity);
+
+        // Crear inventario asociado
+        const stock = this.stockRepository.create({
+          product,
+          available_quantity: item.inStock,
+          warehouse: 'Main Warehouse',
+          size: sizeCreated,
+        });
+        await this.stockRepository.save(stock);
       }
 
       // Crear etiquetas asociadas
