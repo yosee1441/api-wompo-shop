@@ -1,4 +1,17 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateStockDto } from './create-stock.dto';
+import { IsInt, IsNotEmpty, Min } from 'class-validator';
 
-export class UpdateStockDto extends PartialType(CreateStockDto) {}
+export class UpdateStockDto {
+  @IsInt()
+  @IsNotEmpty({ message: 'productId is required' })
+  @Min(1, { message: 'productId must be a positive integer' })
+  productId: number;
+
+  @IsInt()
+  @IsNotEmpty({ message: 'sizeId is required' })
+  @Min(1, { message: 'sizeId must be a positive integer' })
+  sizeId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  quantity: number;
+}

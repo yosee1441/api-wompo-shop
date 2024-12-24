@@ -2,6 +2,7 @@ import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
+import { ProductService } from '@/product/product.service';
 import { StockService } from '@/stock/stock.service';
 import { OrderService } from '@/order/order.service';
 import { OrderItemService } from '@/order-item/order-item.service';
@@ -23,6 +24,7 @@ export class TransactionService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly wompiService: WompiService,
+    private readonly productService: ProductService,
     private readonly requestTypeService: RequestTypeService,
     private readonly orderService: OrderService,
     private readonly orderItemService: OrderItemService,
@@ -38,6 +40,25 @@ export class TransactionService {
     await queryRunner.startTransaction();
 
     try {
+      const product = await this.productService.findOneById(dto.productId);
+      const subtotal = product.price * dto.quantity;
+      const total = subtotal * (product.iva + 1);
+
+      const orderEntity = await this.orderService.create({
+        customerId: dto.customerId,
+        transactionId: null,
+        deliveryAddress: '',
+        status: OrderStatus.PENDING,
+        total,
+      });
+
+      await this.orderItemService.create({
+        orderId: orderEntity.id,
+        productId: dto.productId,
+        quantity: dto.quantity,
+        subtotal: subtotal,
+      });
+
       const isStockAvailability =
         await this.stockService.checkStockAvailability(
           dto.productId,
@@ -49,6 +70,27 @@ export class TransactionService {
         throw new BadRequestException('Stock not available');
       }
 
+      await this.stockService.updateAvailableQuantity({
+        productId: dto.productId,
+        sizeId: dto.sizeId,
+        quantity: dto.quantity,
+      });
+
+      const reference = generateReferenceUseCase();
+      const requestType = await this.requestTypeService.findOneByName(
+        RequestTypeNames.PURCHASE,
+      );
+
+      const transactionEntity = this.transactionRepository.create({
+        customer: { id: dto.customerId },
+        reference_number: reference,
+        requestType: { id: requestType.id },
+        paymentResponse: {},
+      });
+
+      const transaction =
+        await this.transactionRepository.save(transactionEntity);
+
       const tokenResponse = await generateTokenUseCase(this.wompiService, {
         cardNumber: dto.cardNumber,
         cardHolder: dto.cardHolder,
@@ -57,7 +99,6 @@ export class TransactionService {
         expYear: dto.expYear,
       });
 
-      const reference = generateReferenceUseCase();
       const signature = generateHashUseCase({
         transactionReference: reference,
         amountInCents: dto.amountInCents * dto.quantity,
@@ -81,33 +122,17 @@ export class TransactionService {
         redirectUrl: dto.redirectUrl,
       });
 
-      const requestType = await this.requestTypeService.findOneByName(
-        RequestTypeNames.PURCHASE,
-      );
-
-      const transactionEntity = this.transactionRepository.create({
-        customer: { id: dto.customerId },
-        reference_number: reference,
-        requestType: { id: requestType.id },
-        paymentResponse: response.data,
-      });
-
-      const transaction =
-        await this.transactionRepository.save(transactionEntity);
-
-      const orderEntity = await this.orderService.create({
-        customerId: dto.customerId,
+      await this.orderService.updateTransactionId(orderEntity.id, {
         transactionId: transaction.id,
-        deliveryAddress: '',
-        status: OrderStatus.PENDING,
-        total: dto.amountInCents * dto.quantity,
       });
 
-      await this.orderItemService.create({
-        orderId: orderEntity.id,
-        productId: dto.productId,
-        quantity: dto.quantity,
-        subtotal:
+      const updatedTransaction = await this.transactionRepository.findOne({
+        where: { id: transaction.id },
+      });
+
+      await this.transactionRepository.save({
+        ...updatedTransaction,
+        paymentResponse: response,
       });
 
       await queryRunner.commitTransaction();

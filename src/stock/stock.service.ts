@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UpdateStockDto } from './dto/update-stock.dto';
+import { UpdateStockDto } from './dto';
 import { Stock } from './entities';
 import { Repository } from 'typeorm';
 import { AvailabilityResponse } from './interfaces';
@@ -17,6 +17,28 @@ export class StockService {
     private readonly stockRepository: Repository<Stock>,
   ) {}
 
+  async findOneByProductIdAndSizeId(
+    productId: number,
+    sizeId: number,
+  ): Promise<Stock> {
+    const stock = await findStockByProductAndSizeUseCase(this.stockRepository, {
+      productId,
+      sizeId,
+    });
+    return stock;
+  }
+
+  async updateAvailableQuantity(dto: UpdateStockDto): Promise<Stock> {
+    const stock = await findStockByProductAndSizeUseCase(this.stockRepository, {
+      productId: dto.productId,
+      sizeId: dto.productId,
+    });
+    return await this.stockRepository.save({
+      ...stock,
+      available_quantity: stock.available_quantity - dto.quantity,
+    });
+  }
+
   async checkStockAvailability(
     productId: number,
     sizeId: number,
@@ -28,9 +50,5 @@ export class StockService {
     });
 
     return checkStockQuantityUseCase(stock, quantity);
-  }
-
-  update(id: number, updateStockDto: UpdateStockDto) {
-    return `This action updates a #${id} stock, ${updateStockDto}`;
   }
 }

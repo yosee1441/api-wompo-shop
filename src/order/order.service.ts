@@ -25,11 +25,15 @@ export class OrderService {
     return await this.orderRepository.save(orderEntity);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: number): Promise<Order> {
+    return this.orderRepository.findOne({ where: { id } });
   }
 
-  update(id: number, dto: UpdateOrderDto) {
-    return { test: `This action updates a #${id} order`, dto };
+  async updateTransactionId(id: number, dto: UpdateOrderDto) {
+    const order = await this.findOne(id);
+    return await this.orderRepository.save({
+      ...order,
+      transaction: { id: dto.transactionId },
+    });
   }
 }

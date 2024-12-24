@@ -11,6 +11,7 @@ import {
   transformProductsUseCase,
   transformProductUseCase,
   calculateStockForSizesUseCase,
+  findOneByIdUseCase,
 } from './use-cases';
 
 @Injectable()
@@ -19,6 +20,10 @@ export class ProductService {
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
   ) {}
+
+  async findOneById(id: number): Promise<Product> {
+    return await findOneByIdUseCase(this.productsRepository, { id });
+  }
 
   async findOneBySlug(slug: string) {
     const product = await findProductBySlugUseCase(this.productsRepository, {

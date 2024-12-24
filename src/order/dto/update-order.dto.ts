@@ -5,7 +5,7 @@ import { CreateOrderDto } from './create-order.dto';
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   @IsInt()
-  @IsNotEmpty({ message: 'id is required' })
-  @Min(1, { message: 'id must be a positive integer' })
-  id: number;
+  @IsNotEmpty({ message: 'transactionId is required' })
+  @Min(1, { message: 'transactionId must be a positive integer' })
+  transactionId: number;
 }
