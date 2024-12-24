@@ -18,6 +18,7 @@ export const paginatedProductsUseCase = async (
       images: true,
       sizes: true,
       tags: true,
+      stocks: true,
     },
     skip: (page - 1) * limit,
     take: limit,

@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Transform } from 'class-transformer';
 
 import { Transaction } from '@/transaction/entities';
 import { Customer } from '@/customer/entities';
@@ -50,6 +51,7 @@ export class Order {
   delivery_address: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Transform(({ value }) => parseFloat(value))
   total: number;
 
   @CreateDateColumn({

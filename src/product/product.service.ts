@@ -3,11 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Product } from './entities';
-import { CreateProductDto } from './dto';
 import { PaginationDto, Pagination } from '@/common/pagination';
 import {
   paginatedProductsUseCase,
   buildPaginationResponseUseCase,
+  findProductBySlugUseCase,
+  transformProductsUseCase,
+  transformProductUseCase,
+  calculateStockForSizesUseCase,
 } from './use-cases';
 
 @Injectable()
@@ -17,8 +20,11 @@ export class ProductService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  create(dto: CreateProductDto): Promise<Product> {
-    return this.productsRepository.save(dto);
+  async findOneBySlug(slug: string) {
+    const product = await findProductBySlugUseCase(this.productsRepository, {
+      slug,
+    });
+    return transformProductUseCase(calculateStockForSizesUseCase(product));
   }
 
   async findAllPagination(dto: PaginationDto): Promise<Pagination<Product[]>> {
@@ -26,6 +32,10 @@ export class ProductService {
       this.productsRepository,
       dto,
     );
-    return buildPaginationResponseUseCase(results, { total, page: dto.page });
+
+    return buildPaginationResponseUseCase(transformProductsUseCase(results), {
+      total,
+      page: dto.page,
+    });
   }
 }

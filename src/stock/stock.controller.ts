@@ -1,34 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Query } from '@nestjs/common';
+
 import { StockService } from './stock.service';
-import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
+import { AvailabilityResponse } from './interfaces';
 
 @Controller('stock')
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 
-  @Post()
-  create(@Body() createStockDto: CreateStockDto) {
-    return this.stockService.create(createStockDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.stockService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stockService.findOne(+id);
+  @Get('availability')
+  checkStockAvailability(
+    @Query('product') productId: number,
+    @Query('size') size: number,
+    @Query('quantity') quantity: number,
+  ): Promise<AvailabilityResponse> {
+    return this.stockService.checkStockAvailability(productId, size, quantity);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStockDto: UpdateStockDto) {
     return this.stockService.update(+id, updateStockDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stockService.remove(+id);
   }
 }

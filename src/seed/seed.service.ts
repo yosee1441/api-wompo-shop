@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Image, Size, Tag } from '@/entities';
 import { Product } from '@/product/entities';
 import { Stock } from '@/stock/entities';
+import { Customer } from '@/customer/entities';
+import { RequestType } from '@/request-type/entities';
 
 @Injectable()
 export class SeedService {
@@ -21,6 +23,10 @@ export class SeedService {
     private readonly tagRepository: Repository<Tag>,
     @InjectRepository(Stock)
     private readonly stockRepository: Repository<Stock>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+    @InjectRepository(RequestType)
+    private readonly requestTypeRepository: Repository<RequestType>,
   ) {}
 
   async runSeed(): Promise<void> {
@@ -713,6 +719,7 @@ export class SeedService {
         description: item.description,
         price: item.price,
         iva: 0.16,
+        discount: 0,
         slug: item.slug,
         type: item.type,
         gender: item.gender,
@@ -743,6 +750,29 @@ export class SeedService {
         const tagEntity = this.tagRepository.create({ name: tag, product });
         await this.tagRepository.save(tagEntity);
       }
+    }
+
+    const customer = this.customerRepository.create({
+      name: 'yoselin vivas',
+      email: 'vivas@gmail.com',
+      address: 'calle 1',
+      phone: '123456789',
+    });
+    await this.customerRepository.save(customer);
+
+    const requestTypes = [
+      { name: 'Purchase', description: 'Compra' },
+      { name: 'Special Order', description: 'Pedido Especial' },
+      { name: 'Return', description: 'Devolución' },
+      { name: 'Exchange', description: 'Cambio' },
+    ];
+
+    for (const requestType of requestTypes) {
+      const requestTypeEntity = this.requestTypeRepository.create({
+        name: requestType.name,
+        description: requestType.description,
+      });
+      await this.requestTypeRepository.save(requestTypeEntity);
     }
 
     this.logger.log('Seed data inserted successfully!');

@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Transform } from 'class-transformer';
 
 import { Image, Size, Tag } from '@/entities';
 import { OrderItem } from '@/order-item/entities';
@@ -23,12 +24,15 @@ export class Product {
   description: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
+  @Transform(({ value }) => parseFloat(value))
   price: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  @Transform(({ value }) => parseFloat(value))
   discount: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Transform(({ value }) => parseFloat(value))
   iva: number;
 
   @Column({ unique: true })

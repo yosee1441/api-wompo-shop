@@ -1,26 +1,17 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
-import { CreateRequestTypeDto, UpdateRequestTypeDto } from './dto';
+import { RequestType } from './entities';
 
 @Injectable()
 export class RequestTypeService {
-  create(createRequestTypeDto: CreateRequestTypeDto) {
-    return createRequestTypeDto;
-  }
+  constructor(
+    @InjectRepository(RequestType)
+    private readonly requestTypeRepository: Repository<RequestType>,
+  ) {}
 
-  findAll() {
-    return `This action returns all requestType`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} requestType`;
-  }
-
-  update(id: number, updateRequestTypeDto: UpdateRequestTypeDto) {
-    return { id, updateRequestTypeDto };
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} requestType`;
+  findOneByName(name: string): Promise<RequestType> {
+    return this.requestTypeRepository.findOne({ where: { name } });
   }
 }

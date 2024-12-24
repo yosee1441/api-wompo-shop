@@ -1,18 +1,27 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto';
 import { PaginationDto } from '@/common/pagination';
-import { ProductSchema } from './swagger';
+import { OneProduct, ProductSchema } from './swagger';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  create(@Body() dto: CreateProductDto) {
-    return this.productService.create(dto);
+  @Get(':slug')
+  @ApiOperation({
+    summary: 'Get find one by slug',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful Response',
+    schema: {
+      example: ProductSchema,
+    },
+  })
+  findOneBySlug(@Param('slug') slug: string) {
+    return this.productService.findOneBySlug(slug);
   }
 
   @Get()
@@ -23,7 +32,7 @@ export class ProductController {
     status: 200,
     description: 'Successful Response',
     schema: {
-      example: ProductSchema,
+      example: OneProduct,
     },
   })
   findAllPagination(@Query() dto: PaginationDto) {

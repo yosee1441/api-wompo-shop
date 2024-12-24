@@ -6,8 +6,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 import { Transaction } from '@/transaction/entities';
+
+export enum RequestTypeNames {
+  PURCHASE = 'Purchase',
+  SPECIAL_ORDER = 'Special Order',
+  RETURN = 'Return',
+  EXCHANGE = 'Exchange',
+}
 
 @Entity()
 export class RequestType {

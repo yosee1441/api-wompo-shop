@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { CreateStockDto } from './dto/create-stock.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { UpdateStockDto } from './dto/update-stock.dto';
+import { Stock } from './entities';
+import { Repository } from 'typeorm';
+import { AvailabilityResponse } from './interfaces';
+import {
+  findStockByProductAndSizeUseCase,
+  checkStockQuantityUseCase,
+} from './use-cases';
 
 @Injectable()
 export class StockService {
-  create(createStockDto: CreateStockDto) {
-    return 'This action adds a new stock';
-  }
+  constructor(
+    @InjectRepository(Stock)
+    private readonly stockRepository: Repository<Stock>,
+  ) {}
 
-  findAll() {
-    return `This action returns all stock`;
-  }
+  async checkStockAvailability(
+    productId: number,
+    sizeId: number,
+    quantity: number,
+  ): Promise<AvailabilityResponse> {
+    const stock = await findStockByProductAndSizeUseCase(this.stockRepository, {
+      productId,
+      sizeId,
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} stock`;
+    return checkStockQuantityUseCase(stock, quantity);
   }
 
   update(id: number, updateStockDto: UpdateStockDto) {
-    return `This action updates a #${id} stock`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} stock`;
+    return `This action updates a #${id} stock, ${updateStockDto}`;
   }
 }

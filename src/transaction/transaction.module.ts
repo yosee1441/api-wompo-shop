@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Transaction } from './entities';
 import { TransactionService } from './transaction.service';
 import { TransactionController } from './transaction.controller';
+import { WompiModule } from '@/wompi/wompi.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction])],
+  imports: [TypeOrmModule.forFeature([Transaction]), WompiModule],
   controllers: [TransactionController],
   providers: [TransactionService],
 })
