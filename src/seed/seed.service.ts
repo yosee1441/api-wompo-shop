@@ -7,6 +7,7 @@ import { Product } from '@/product/entities';
 import { Stock } from '@/stock/entities';
 import { Customer } from '@/customer/entities';
 import { RequestType } from '@/request-type/entities';
+import { convertToCOP, taxRate } from '@/utils';
 
 @Injectable()
 export class SeedService {
@@ -41,6 +42,7 @@ export class SeedService {
         images: ['1740176-00-A_0_2000.jpg', '1740176-00-A_1.jpg'],
         inStock: 7,
         price: 75,
+        discount: 10,
         sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
         slug: 'mens_chill_crew_neck_sweatshirt',
         type: 'shirts',
@@ -717,9 +719,9 @@ export class SeedService {
       const product = this.productRepository.create({
         title: item.title,
         description: item.description,
-        price: item.price,
-        iva: 0.16,
-        discount: 0,
+        price: convertToCOP(item.price),
+        iva: taxRate,
+        discount: item?.discount ? item?.discount / 100 : 0,
         slug: item.slug,
         type: item.type,
         gender: item.gender,
@@ -753,10 +755,15 @@ export class SeedService {
     }
 
     const customer = this.customerRepository.create({
-      name: 'yoselin vivas',
-      email: 'vivas@gmail.com',
-      address: 'calle 1',
-      phone: '123456789',
+      name: 'Juan Alfonso Pérez Rodríguez',
+      email: 'example@wompi.co',
+      phone: '573307654321',
+      address: 'Calle 34 # 56 - 78',
+      country: 'CO',
+      region: 'Cundinamarca',
+      city: 'Bogotá',
+      legalId: '1234567890',
+      legalIdType: 'CC',
     });
     await this.customerRepository.save(customer);
 
@@ -782,10 +789,13 @@ export class SeedService {
     this.logger.log('Deleting all existing records...');
 
     await Promise.all([
+      this.stockRepository.delete({}),
       this.imageRepository.delete({}),
       this.sizeRepository.delete({}),
       this.tagRepository.delete({}),
       this.productRepository.delete({}),
+      this.requestTypeRepository.delete({}),
+      this.customerRepository.delete({}),
     ]);
 
     this.logger.log('Existing records deleted successfully!');

@@ -1,10 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 import { Order } from './entities';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { findOneByIdUseCase } from './use-cases';
 
 @Injectable()
 export class OrderService {
@@ -19,21 +20,45 @@ export class OrderService {
       customer: { id: dto.customerId },
       total: dto.total,
       status: dto.status,
-      delivery_address: dto.deliveryAddress,
+      deliveryAddress: dto.deliveryAddress,
       delivery_date: new Date(),
     });
     return await this.orderRepository.save(orderEntity);
   }
 
-  async findOne(id: number): Promise<Order> {
-    return this.orderRepository.findOne({ where: { id } });
+  async createWithQueryRunner(queryRunner: QueryRunner, dto: CreateOrderDto) {
+    const orderEntity = this.orderRepository.create({
+      transaction: { id: dto.transactionId },
+      customer: { id: dto.customerId },
+      total: dto.total,
+      status: dto.status,
+      deliveryAddress: dto.deliveryAddress,
+      delivery_date: new Date(),
+    });
+    return await queryRunner.manager.save(orderEntity);
   }
 
-  async updateTransactionId(id: number, dto: UpdateOrderDto) {
-    const order = await this.findOne(id);
-    return await this.orderRepository.save({
-      ...order,
+  async findOne(id: number): Promise<Order> {
+    return await findOneByIdUseCase(this.orderRepository, { id });
+  }
+
+  async updateTransactionIdWithQueryRunner(
+    queryRunner: QueryRunner,
+    id: number,
+    dto: UpdateOrderDto,
+  ) {
+    return await queryRunner.manager.update(Order, id, {
       transaction: { id: dto.transactionId },
+    });
+  }
+
+  async updateWithQueryRunner(
+    queryRunner: QueryRunner,
+    id: number,
+    dto: UpdateOrderDto,
+  ) {
+    return await queryRunner.manager.update(Order, id, {
+      status: dto.status,
     });
   }
 }

@@ -27,6 +27,25 @@ export class Customer {
   @Column()
   address: string;
 
+  @Column()
+  country: string;
+
+  @Column()
+  region: string;
+
+  @Column()
+  city: string;
+
+  @Column({
+    name: 'legal_id',
+  })
+  legalId: string;
+
+  @Column({
+    name: 'legal_id_type',
+  })
+  legalIdType: string;
+
   @OneToMany(() => Transaction, (transaction) => transaction.customer)
   transactions: Transaction[];
 

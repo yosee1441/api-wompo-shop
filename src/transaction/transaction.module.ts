@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WinstonModule } from 'nest-winston';
 
 import { Transaction } from './entities';
 import { TransactionService } from './transaction.service';
@@ -10,9 +11,11 @@ import { RequestTypeModule } from '@/request-type/request-type.module';
 import { OrderModule } from '@/order/order.module';
 import { OrderItemModule } from '@/order-item/order-item.module';
 import { StockModule } from '@/stock/stock.module';
+import { CustomerModule } from '@/customer/customer.module';
 
 @Module({
   imports: [
+    WinstonModule,
     TypeOrmModule.forFeature([Transaction]),
     WompiModule,
     ProductModule,
@@ -20,6 +23,7 @@ import { StockModule } from '@/stock/stock.module';
     OrderModule,
     OrderItemModule,
     StockModule,
+    CustomerModule,
   ],
   controllers: [TransactionController],
   providers: [TransactionService],

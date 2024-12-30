@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, Max, Min } from 'class-validator';
 
 export class CreateOrderItemDto {
   @IsInt()
@@ -17,5 +17,6 @@ export class CreateOrderItemDto {
 
   @IsInt()
   @IsNotEmpty()
+  @Max(99999999.99, { message: 'subtotal must not exceed 99999999.99' })
   subtotal: number;
 }

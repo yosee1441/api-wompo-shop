@@ -1,17 +1,31 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto';
-import { merchantResponseSchema } from './swagger/schemas';
+import {
+  merchantResponseSchema,
+  transactionResponseSchema,
+} from './swagger/schemas';
 
 @Controller()
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @Post('/transactions')
-  createTransaction(dto: CreateTransactionDto) {
-    return this.transactionService.createTransaction(dto);
+  @ApiOperation({
+    summary: 'Creation transactions',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Successful Response',
+    schema: {
+      example: transactionResponseSchema,
+    },
+  })
+  createTransaction(@Body() dto: CreateTransactionDto) {
+    const response = this.transactionService.createTransaction(dto);
+    return response;
   }
 
   @Get('/merchants')

@@ -1,7 +1,10 @@
-import crypto from 'crypto';
+const generateSegment = (length: number): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  return Array.from({ length }, () =>
+    chars.charAt(Math.floor(Math.random() * chars.length)),
+  ).join('');
+};
 
 export const generateReferenceUseCase = (): string => {
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const randomString = crypto.randomBytes(4).toString('hex').toUpperCase();
-  return `TRX-${date}-${randomString}`;
+  return `sk8-${generateSegment(5)}-${generateSegment(7)}-${generateSegment(4)}`;
 };

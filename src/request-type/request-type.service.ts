@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { RequestType } from './entities';
+import { findOneByNameUseCase } from './use-cases';
 
 @Injectable()
 export class RequestTypeService {
@@ -11,7 +12,7 @@ export class RequestTypeService {
     private readonly requestTypeRepository: Repository<RequestType>,
   ) {}
 
-  findOneByName(name: string): Promise<RequestType> {
-    return this.requestTypeRepository.findOne({ where: { name } });
+  async findOneByName(name: string): Promise<RequestType> {
+    return await findOneByNameUseCase(this.requestTypeRepository, { name });
   }
 }

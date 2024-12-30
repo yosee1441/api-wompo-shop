@@ -3,7 +3,7 @@ export interface CreateTokenResponse {
   data: Data;
 }
 
-interface Data {
+export interface Data {
   id: string;
   created_at: string;
   brand: string;

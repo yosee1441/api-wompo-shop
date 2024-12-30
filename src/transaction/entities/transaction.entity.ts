@@ -11,6 +11,16 @@ import {
 import { Customer } from '@/customer/entities';
 import { RequestType } from '@/request-type/entities';
 import { Order } from '@/order/entities';
+import { CreateTransactionResponse } from '@/wompi/interfaces';
+
+interface Item {
+  sizeId: number;
+  productId: number;
+}
+
+interface Items extends CreateTransactionResponse {
+  items: Item[];
+}
 
 @Entity()
 export class Transaction {
@@ -39,7 +49,7 @@ export class Transaction {
     nullable: false,
     default: {},
   })
-  paymentResponse: any | any[];
+  paymentResponse: Items;
 
   @CreateDateColumn({
     name: 'created_at',

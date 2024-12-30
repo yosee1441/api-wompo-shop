@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { UpdateStockDto } from './dto';
 import { Stock } from './entities';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { AvailabilityResponse } from './interfaces';
 import {
   findStockByProductAndSizeUseCase,
@@ -28,6 +28,16 @@ export class StockService {
     return stock;
   }
 
+  async restoreWithQueryRunner(
+    queryRunner: QueryRunner,
+    id: number,
+    availableQuantity: number,
+  ) {
+    return await queryRunner.manager.update(Stock, id, {
+      available_quantity: availableQuantity,
+    });
+  }
+
   async updateAvailableQuantity(dto: UpdateStockDto): Promise<Stock> {
     const stock = await findStockByProductAndSizeUseCase(this.stockRepository, {
       productId: dto.productId,
@@ -37,6 +47,20 @@ export class StockService {
       ...stock,
       available_quantity: stock.available_quantity - dto.quantity,
     });
+  }
+
+  async updateAvailableQuantityWithQueryRunner(
+    queryRunner: QueryRunner,
+    dto: UpdateStockDto,
+  ): Promise<Stock> {
+    const stock = await findStockByProductAndSizeUseCase(this.stockRepository, {
+      productId: dto.productId,
+      sizeId: dto.sizeId,
+    });
+
+    stock.available_quantity -= dto.quantity;
+
+    return await queryRunner.manager.save(stock);
   }
 
   async checkStockAvailability(

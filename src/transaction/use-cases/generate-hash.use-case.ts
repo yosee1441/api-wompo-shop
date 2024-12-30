@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+import { sha256 } from '@/utils';
 
 interface Options {
   transactionReference: string;
@@ -10,9 +10,10 @@ interface Options {
 export const generateHashUseCase = (options: Options): string => {
   const { integritySecret, transactionReference, amountInCents, currency } =
     options;
-  return createHmac('sha256', integritySecret)
-    .update(
-      `${transactionReference}${amountInCents}${currency}${integritySecret}`,
-    )
-    .digest('hex');
+  return sha256(
+    `${transactionReference}${amountInCents}${currency}${integritySecret}`,
+  );
+  // return sha256(
+  //   'sk8-438k4-xmxm392-sn2m2490000COPprod_integrity_Z5mMke9x0k8gpErbDqwrJXMqsI6SFli6',
+  // );
 };

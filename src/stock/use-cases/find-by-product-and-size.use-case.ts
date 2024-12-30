@@ -12,14 +12,14 @@ export const findStockByProductAndSizeUseCase = async (
   options: Options,
 ): Promise<Stock> => {
   const { productId, sizeId } = options;
-  const stock = stockRepository.findOne({
+  const stock = await stockRepository.findOne({
     where: {
       product: { id: productId },
       size: { id: sizeId },
     },
   });
 
-  if (!stock) {
+  if (!stock?.id) {
     throw new NotFoundException('Not found product with size');
   }
 

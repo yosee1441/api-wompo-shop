@@ -13,12 +13,7 @@ import { Transform } from 'class-transformer';
 import { Transaction } from '@/transaction/entities';
 import { Customer } from '@/customer/entities';
 import { OrderItem } from '@/order-item/entities';
-
-export enum OrderStatus {
-  PENDING = 'Pending',
-  IN_PROGRESS = 'In Progress',
-  DELIVERED = 'Delivered',
-}
+import { StatusTransaction } from '@/wompi/utils/enums.util';
 
 @Entity()
 export class Order {
@@ -42,13 +37,13 @@ export class Order {
 
   @Column({
     type: 'enum',
-    enum: OrderStatus,
-    default: OrderStatus.PENDING,
+    enum: StatusTransaction,
+    default: StatusTransaction.PENDING,
   })
-  status: OrderStatus;
+  status: StatusTransaction;
 
-  @Column()
-  delivery_address: string;
+  @Column({ name: 'delivery_address', nullable: true })
+  deliveryAddress: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   @Transform(({ value }) => parseFloat(value))

@@ -26,6 +26,56 @@ class PaymentMethodDto {
   token: string;
 }
 
+class TaxesDto {
+  @IsString()
+  @IsNotEmpty()
+  type: string = 'VAT';
+
+  @IsNumber()
+  @Min(1)
+  amountInCents: number;
+}
+
+class CustomerDataDto {
+  @IsString()
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsString()
+  @IsNotEmpty()
+  fullName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  legalId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  legalIdType: string;
+}
+
+class ShippingAddressDto {
+  @IsString()
+  @IsNotEmpty()
+  addressLine1: string;
+
+  @IsString()
+  @IsNotEmpty()
+  country: string;
+
+  @IsString()
+  @IsNotEmpty()
+  region: string;
+
+  @IsString()
+  @IsNotEmpty()
+  city: string;
+
+  @IsString()
+  @IsNotEmpty()
+  phoneNumber: string;
+}
+
 export class CreateTransactionDto {
   @IsUrl()
   @IsNotEmpty()
@@ -69,4 +119,19 @@ export class CreateTransactionDto {
   @IsObject()
   @Type(() => PaymentMethodDto)
   paymentMethod: PaymentMethodDto;
+
+  @ValidateNested()
+  @IsObject()
+  @Type(() => TaxesDto)
+  taxes: TaxesDto[];
+
+  @ValidateNested()
+  @IsObject()
+  @Type(() => CustomerDataDto)
+  customerData: CustomerDataDto;
+
+  @ValidateNested()
+  @IsObject()
+  @Type(() => ShippingAddressDto)
+  shippingAddress: ShippingAddressDto;
 }

@@ -1,5 +1,12 @@
-import { IsDecimal, IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
-import { OrderStatus } from '@/order/entities';
+import {
+  IsDecimal,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+import { StatusTransaction } from '@/wompi/utils/enums.util';
 
 export class CreateOrderDto {
   @IsInt()
@@ -14,12 +21,13 @@ export class CreateOrderDto {
 
   @IsString()
   @IsNotEmpty()
-  status: OrderStatus;
+  status: StatusTransaction;
 
   @IsString()
   @IsNotEmpty()
   deliveryAddress: string;
 
   @IsDecimal()
+  @Max(99999999.99, { message: 'total must not exceed 99999999.99' })
   total: number;
 }
